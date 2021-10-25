@@ -19,17 +19,11 @@
     </RotationSection>
 
     <PosPartSection label="gem21.xml">
-        <PosPart copyNumber="2">
-            <rParent name="gem21:GEMDisk21LP"/>
-            <rChild name="gem21:GEMBox21B"/>
-            <rRotation name="RotationSrz" />
-            <Translation x="0" y="0" z="100" />
-        </PosPart>
         <PosPart copyNumber="1">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
             <rRotation name="RotationSrz" />
-            <Translation x="0" y="0" z="100" />
+            <Translation x="0" y="704.4" z="100-7069.16" />
         </PosPart>
     </PosPartSection>
     

@@ -24,7 +24,7 @@
             <rParent name="ge0:GE0P"/>
             <rChild name="ge0:GE0Box"/>
             <rRotation name="RotationSrz" />
-            <Translation x="0" y="0" z="120" />
+            <Translation x="0" y="0" z="110-4289.5" />
         </PosPart>        
     </PosPartSection>
     

@@ -23,7 +23,7 @@
 
 
 
-<ConstantsSection label="gem10x10.xml eval="true">
+<ConstantsSection label="gem10x10.xml" eval="true">
   <Constant name="totthick"       value="16*mm"/>
   <Constant name="pcbwidth"       value="297*mm"/>
   <Constant name="pcbheight"      value="297*mm"/>
