@@ -17,6 +17,7 @@ cd CMSSW_12_1_0_pre4/src
 cmsenv
 git cms-init -q
 git cms-merge-topic yeckang:mapping_update_v0.5 # Will be updated
+git cms-merge-topic jshlee:GEMGeometryBuilder-bugfix-CMSSW_12_1_0_pre3
 git clone git@github.com:yeckang/gemsw.git -b testBeam_unpack
 scram b -j 4
 cd gemsw/EventFilter/test
