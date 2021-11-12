@@ -21,6 +21,7 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         #'gemsw/Geometry/data/QC8GE21/teststand.xml',
         'gemsw/Geometry/data/QC8GE21/teststand2.xml',
     ),
-    ),
+    
     rootNodeName = cms.string('cms:OCMS')
+
 )

@@ -1,0 +1,22 @@
+======================== Opening output file
+GEMGeometryAnalyzer: Analyzer...
+start --------------------------------------------------------------------------------------------------------
+ Geometry node for GEMGeom is  0x7f338993af80
+ detTypes       	0
+ GeomDetUnit       	0
+ GeomDet           	0
+ GeomDetUnit DetIds	0
+ eta partitions 	0
+ chambers       	0
+ super chambers  	0
+ rings  		0
+ stations  		0
+ regions  		2
+ total number of strips	0
+ total number of pads  	0
+GEMGeometryAnalyzer: Begin iteration over geometry...
+iter --------------------------------------------------------------------------------------------------------
+GEMGeometryAnalyzerBegin GEMGeometry structure TEST
+  GEMRegion -1 has 0 stations.
+  GEMRegion 1 has 0 stations.
+-------------------------------------------------------------------------------------------------------- end
