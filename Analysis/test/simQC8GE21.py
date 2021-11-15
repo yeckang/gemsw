@@ -16,7 +16,7 @@ process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 # test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
-process.load('gemsw.Geometry.GeometryTestBeam_cff')
+process.load('gemsw.Geometry.GeometryQC8GE21_cff')
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag
@@ -56,24 +56,22 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0)
 )
 
-# test beam detectors at y-axis
-process.generator = cms.EDFilter("Pythia8EGun",
+# Cosmic Muon generator
+process.generator = cms.EDProducer("CosmicGun",
+    AddAntiParticle = cms.bool(True),
     PGunParameters = cms.PSet(
-        AddAntiParticle = cms.bool(False),
-        MaxE = cms.double(20.0),
-        MinE = cms.double(9.0),
-        MaxEta = cms.double(0.001),
-        MinEta = cms.double(0.00),        
-        MaxPhi = cms.double(1.58),
-        MinPhi = cms.double(1.57),
-        ParticleID = cms.vint32(13)#211
-    ),
-    PythiaParameters = cms.PSet(
-        parameterSets = cms.vstring()
+        MinPt = cms.double(99.99),
+        MaxPt = cms.double(100.01),
+        MinPhi = cms.double(3.141592),
+        MaxPhi = cms.double(-3.141592),
+        MinTheta = cms.double(1.570796),
+        MaxTheta = cms.double(3.141592),
+        IsThetaFlat = cms.bool(False), # If 'True': theta distribution is flat. If 'False': theta distribution is a cos^2
+        PartID = cms.vint32(-13)
     ),
     Verbosity = cms.untracked.int32(0),
     firstRun = cms.untracked.uint32(1),
-    psethack = cms.string('Ten mu e 0 to 200')
+    psethack = cms.string('single mu pt 100')
 )
 
 process.g4SimHits.UseMagneticField = cms.bool(False)
@@ -107,11 +105,13 @@ process.rawDataCollector.RawCollectionList = cms.VInputTag(cms.InputTag("gemPack
 process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
 process.muonGEMDigis.keepDAQStatus = True
+process.gemRecHits.gemDigiLabel = cms.InputTag('simMuonGEMDigis')
 
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
-process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis+process.gemRecHits)
+#process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis+process.gemRecHits)
+process.digi2raw_step = cms.Path(process.gemRecHits)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
