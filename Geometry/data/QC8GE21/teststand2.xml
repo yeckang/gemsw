@@ -26,23 +26,10 @@
             <Translation x="0*cm" y="0*cm" z="60*cm" />
             <rRotation name="x90" />
         </PosPart>
-        <PosPart copyNumber="2">
-            <rParent name="gem21:GEMDisk21LP"/>
-            <rChild name="gem21:GEMBox21B"/>
-            <Translation x="0*cm" y="0*cm" z="40*cm" />
-            <rRotation name="x90" />
-        </PosPart>
-
         <PosPart copyNumber="3">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
-            <Translation x="0*cm" y="0*cm" z="20*cm" />
-            <rRotation name="x90" />
-        </PosPart>
-        <PosPart copyNumber="4">
-            <rParent name="gem21:GEMDisk21LP"/>
-            <rChild name="gem21:GEMBox21B"/>
-            <Translation x="0*cm" y="0*cm" z="0*cm" />
+            <Translation x="0*cm" y="0*cm" z="40*cm" />
             <rRotation name="x90" />
         </PosPart>
 
@@ -52,14 +39,27 @@
             <Translation x="0*cm" y="0*cm" z="20*cm" />
             <rRotation name="x90" />
         </PosPart>
-        <PosPart copyNumber="6">
+        <PosPart copyNumber="7">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21B"/>
+            <Translation x="0*cm" y="0*cm" z="0*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="9">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21B"/>
+            <Translation x="0*cm" y="0*cm" z="20*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="11">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="40*cm" />
             <rRotation name="x90" />
         </PosPart>
 
-        <PosPart copyNumber="7">
+        <PosPart copyNumber="13">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="60*cm" />
