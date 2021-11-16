@@ -15,8 +15,8 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'gemsw/Geometry/data/GEMSpecsFilter.xml',
         'gemsw/Geometry/data/GEMSpecs.xml',
         ## custom stand
-        #'gemsw/Geometry/data/QC8GE21/teststand.xml',
-        'gemsw/Geometry/data/QC8GE21/teststand2.xml',
+        'gemsw/Geometry/data/QC8GE21/teststand.xml',
+        #'gemsw/Geometry/data/QC8GE21/teststand2.xml',
     ),
     
     rootNodeName = cms.string('cms:OCMS')
