@@ -23,46 +23,46 @@
         <PosPart copyNumber="1">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm - 60*cm" />
+            <Translation x="0*cm" y="0*cm" z="60*cm" />
             <rRotation name="x90" />
         </PosPart>
         <PosPart copyNumber="2">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm - 40*cm" />
+            <Translation x="0*cm" y="0*cm" z="40*cm" />
             <rRotation name="x90" />
         </PosPart>
 
         <PosPart copyNumber="3">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm - 20*cm" />
+            <Translation x="0*cm" y="0*cm" z="20*cm" />
             <rRotation name="x90" />
         </PosPart>
         <PosPart copyNumber="4">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm - 0*cm" />
+            <Translation x="0*cm" y="0*cm" z="0*cm" />
             <rRotation name="x90" />
         </PosPart>
 
         <PosPart copyNumber="5">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm + 20*cm" />
+            <Translation x="0*cm" y="0*cm" z="20*cm" />
             <rRotation name="x90" />
         </PosPart>
         <PosPart copyNumber="6">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm + 40*cm" />
+            <Translation x="0*cm" y="0*cm" z="40*cm" />
             <rRotation name="x90" />
         </PosPart>
 
         <PosPart copyNumber="7">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" y="0*cm" z="-796.234*cm + 60*cm" />
+            <Translation x="0*cm" y="0*cm" z="60*cm" />
             <rRotation name="x90" />
         </PosPart>
        
