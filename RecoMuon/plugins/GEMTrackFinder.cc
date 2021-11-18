@@ -33,7 +33,6 @@
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
 #include "gemsw/RecoMuon/interface/MuonSmoother.h"
 #include "RecoMuon/StandAloneTrackFinder/interface/StandAloneMuonSmoother.h"
-//#include "TrackingTools/PatternTools/interface/MuonSmoother.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "TrackingTools/KalmanUpdators/interface/KFUpdator.h"
 #include "RecoTracker/TrackProducer/src/TrajectoryToResiduals.h"
@@ -92,7 +91,6 @@ GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
 }
 
 void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
-  //cout << "GEMTrackFinder::start producing segments for " << ++iev << "th event with gem data" << endl;  
   unique_ptr<reco::TrackCollection >          trackCollection( new reco::TrackCollection() );
   unique_ptr<TrackingRecHitCollection >       trackingRecHitCollection( new TrackingRecHitCollection() );
   unique_ptr<reco::TrackExtraCollection >     trackExtraCollection( new reco::TrackExtraCollection() );
@@ -144,7 +142,6 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
     } else {
       detLayerMap_.insert( make_pair(et->position().y(), et) );
     }
-    //cout << ch->id() << " y = " <<ch->position().y() <<endl;
     // save key as neg to sort from top to bottom
   }
 
@@ -157,20 +154,14 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
       findSeeds(frontSeeds, rearSeeds);
     }
   }
-  //cout << "GEMTrackFinder::frontSeeds->size() " << frontSeeds.size() << endl;
-  //cout << "GEMTrackFinder::trajectorySeeds->size() " << trajectorySeeds->size() << endl;
 
   //need to loop over seeds, make best track and save only best track
-  //TrajectorySeed seed =trajectorySeeds->at(0);
   Trajectory bestTrajectory;
   TrajectorySeed bestSeed;
   float maxChi2 = trackChi2_;
   for (auto seed : trajectorySeedCands_){
     Trajectory smoothed = makeTrajectory(seed, gemRecHits.product());
     if (smoothed.isValid()){
-      //cout << "GEMTrackFinder::Trajectory " << smoothed.foundHits() << endl;
-      //cout << "GEMTrackFinder::Trajectory chiSquared/ndof " << smoothed.chiSquared()/float(smoothed.ndof()) << endl;
-      //if (( maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())) and ( smoothed.chiSquared()/float(smoothed.ndof()) > 7.0)){
       if (maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())){
         maxChi2 = smoothed.chiSquared()/float(smoothed.ndof());
         bestTrajectory = smoothed;
@@ -186,10 +177,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
     ev.put(move(trajectorys));
     return;
   }
-  //cout << maxChi2 << endl;
-  //cout << "GEMTrackFinder::bestTrajectory " << bestTrajectory.foundHits() << endl;
-  //cout << "GEMTrackFinder::bestTrajectory chiSquared/ ndof " << bestTrajectory.chiSquared()/float(bestTrajectory.ndof()) << endl;
-  //cout << maxChi2 << endl;
+
   // make track
   const FreeTrajectoryState* ftsAtVtx = bestTrajectory.geometricalInnermostState().freeState();
   
@@ -205,8 +193,8 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
                     ftsAtVtx->charge(),
                     ftsAtVtx->curvilinearError());
 
-  reco::TrackExtra tx;
   //adding rec hits
+  reco::TrackExtra tx;
   TrackingRecHit::ConstRecHitContainer transHits = findMissingHits(bestTrajectory);
   unsigned int nHitsAdded = 0;
   for (Trajectory::RecHitContainer::const_iterator recHit = transHits.begin(); recHit != transHits.end(); ++recHit) {
@@ -238,7 +226,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
 }
 
 void GEMTrackFinder::findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer frontSeeds,
-                                    MuonTransientTrackingRecHit::MuonRecHitContainer rearSeeds)
+                               MuonTransientTrackingRecHit::MuonRecHitContainer rearSeeds)
 {
   unique_ptr<vector<TrajectorySeed> > trajectorySeeds( new vector<TrajectorySeed>());
   if (frontSeeds.size() > 0 && rearSeeds.size() > 0){
@@ -257,11 +245,6 @@ void GEMTrackFinder::findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer 
         LocalTrajectoryParameters param(segPos, segDir, charge);
         TrajectoryStateOnSurface tsos(param, error, fronthit->det()->surface(), &*theService_->magneticField());
     
-        //auto tsosBot = theService_->propagator("StraightLinePropagator")->propagate(tsos,rearhit->det()->surface());
-        //cout << "GEMTrackFinder::tsos        " << tsos << endl;
-        //tsos = theUpdator_->update(tsosBot, *rearhit);
-        //cout << "GEMTrackFinder::tsos update " << tsos << endl;
-          
         PTrajectoryStateOnDet seedTSOS = trajectoryStateTransform::persistentState(tsos, fronthit->rawId());
         
         edm::OwnVector<TrackingRecHit> seedHits;
@@ -300,7 +283,6 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     }
     
     GlobalPoint tsosGP = tsos.globalPosition();
-    //cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
     
     float maxR = 500;
     // find best in all layers
@@ -312,7 +294,6 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       if (skipLargeChamber_ and etaPartID.station() != 1) continue;
       
       GEMRecHitCollection::range range = gemHits->get(etaPartID);
-      //cout<< "Number of GEM rechits available , from chamber: "<< etaPartID<<endl;
       const GEMStripTopology* top_(dynamic_cast<const GEMStripTopology*>(&(etaPart->topology())));
       const float stripLength(top_->stripLength());
       const float stripPitch(etaPart->pitch());
@@ -320,13 +301,11 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
 
         LocalPoint tsosLP = etaPart->toLocal(tsosGP);
         LocalPoint rhLP = (*rechit).localPosition();
-        //double y_err = (*rechit).localPositionError().yy();
         if (abs(rhLP.x() - tsosLP.x()) > stripPitch*5) continue;
         if (abs(rhLP.y() - tsosLP.y()) > stripLength/2) continue;
         // need to find best hits per chamber
         float deltaR = (rhLP - tsosLP).mag();
         if (maxR > deltaR){
-          // cout << " found hit   "<< etaPartID << " pos = "<< rhLP << " R = "<<deltaR <<endl;
           const GeomDet* geomDet(etaPart);  
           tmpRecHit = MuonTransientTrackingRecHit::specificBuild(geomDet,&*rechit);
           maxR = deltaR;
@@ -363,9 +342,6 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
 
     bool hasHit = false;
     for (auto hit : recHits){
-      // cout <<" chmap.first "<< chmap.first
-      //      << " -1*hit->globalPosition().y() "<< -1*hit->globalPosition().y()
-      //      <<endl;
       if (abs(chmap.first - hit->globalPosition().y()) < 1. ){
         hasHit = true;
         break;
@@ -382,9 +358,6 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
     
     GlobalPoint tsosGP = tsos.globalPosition();
 
-    //cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
-    //cout << "tsos error "<< tsos.localError().positionError() << endl;
-    
     shared_ptr<MuonTransientTrackingRecHit> tmpRecHit;
     ////no rechit, make missing hit
     for (auto col : detLayerMap_){
@@ -395,13 +368,7 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
       const LocalPoint pos2D(pos.x(), pos.y(), 0);
       const BoundPlane& bps(etaPart->surface());
         
-      //if(abs(pos.y()) < 17 && abs(pos.x()) < 40 )
-      //  cout << " missing hit "<< etaPart->id() << " pos = "<<pos<< " R = "<<pos.mag() <<" inside "
-      //       <<  bps.bounds().inside(pos2D) <<endl;
-        
       if (bps.bounds().inside(pos2D)){
-        //if (!bp.bounds().inside(pos)) continue;
-        //cout << "made missing hit "<<etaPartID   <<endl;
           
         auto missingHit = make_unique<GEMRecHit>(etaPart->id(), -10, pos2D);
         const GeomDet* geomDet(etaPart);
@@ -416,7 +383,6 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
       ++nmissing;
     }
   }
-  //cout << "found "<<nmissing <<" missing hits"<<endl;
   
   return recHits;
 }
