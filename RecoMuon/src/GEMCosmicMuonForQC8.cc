@@ -50,7 +50,7 @@ public:
 private:
   int iev; // events through
   edm::EDGetTokenT<GEMRecHitCollection> theGEMRecHitToken;
-  MuonSmoother* theSmoother; // CosmicMuonSmoother was changed by MuonSmoother - Daniel Estrada
+  MuonSmoother* theSmoother; // CosmicMuonSmoother was changed by MuonSmoother
   MuonServiceProxy* theService;
   KFUpdator* theUpdator;
   int findSeeds(std::vector<TrajectorySeed> *tmptrajectorySeeds, 
@@ -78,10 +78,10 @@ GEMCosmicMuonForQC8::GEMCosmicMuonForQC8(const edm::ParameterSet& ps) : iev(0) {
   theGEMRecHitToken = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
-  // add the consumesCollector argument is necesary for the current release - Daniel Estrada
+  // add the consumesCollector argument is necesary for the current release 
   theService = new MuonServiceProxy(serviceParameters, consumesCollector());
   edm::ParameterSet smootherPSet = ps.getParameter<edm::ParameterSet>("MuonSmootherParameters");
-  theSmoother = new MuonSmoother(smootherPSet,theService); // CosmicMuonSmoother was changed by MuonSmoother - Daniel Estrada
+  theSmoother = new MuonSmoother(smootherPSet,theService); // CosmicMuonSmoother was changed by MuonSmoother
   theUpdator = new KFUpdator();
   produces<reco::TrackCollection>();
   produces<TrackingRecHitCollection>();
@@ -359,7 +359,7 @@ Trajectory GEMCosmicMuonForQC8::makeTrajectory(TrajectorySeed seed, MuonTransien
   TrajectoryStateOnSurface tsosCurrent = tsos;
   TransientTrackingRecHit::ConstRecHitContainer consRecHits;
 
-  // range was changed by RecHitRange - Daniel Estrada
+  // range was changed by RecHitRange
   TrajectorySeed::RecHitRange range = seed.recHits();
   int nseed = 0;
   GlobalPoint seedGP[2];
