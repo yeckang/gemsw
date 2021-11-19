@@ -78,7 +78,7 @@ GEMCosmicMuon::GEMCosmicMuon(const edm::ParameterSet& ps) : iev(0) {
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
-  // add the consumesCollector argument is necesary for the current release - Daniel Estrada
+  // add the consumesCollector argument is necesary for the current release
   theService_ = new MuonServiceProxy(serviceParameters, consumesCollector()); 
   edm::ParameterSet smootherPSet = ps.getParameter<edm::ParameterSet>("MuonSmootherParameters");
   theSmoother_ = new MuonSmoother(smootherPSet,theService_);
