@@ -8,10 +8,6 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('gemsw.Geometry.GeometryQC8GE21_cff')
-process.load('Configuration.StandardSequences.MagneticField_0T_cff')
-process.load('Configuration.StandardSequences.Reconstruction_cff')
-process.load('Configuration.StandardSequences.RecoSim_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1)
