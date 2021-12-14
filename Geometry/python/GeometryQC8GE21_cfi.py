@@ -12,15 +12,10 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'gemsw/Geometry/data/QC8GE21/gem21.xml',
         'gemsw/Geometry/data/QC8GE21/muonNumbering.xml',
         'gemsw/Geometry/data/muonSens.xml',
-        'gemsw/Geometry/data/GEMSpecsFilter.xml',
-        'gemsw/Geometry/data/GEMSpecs.xml',
         ## custom stand
         'gemsw/Geometry/data/GEMSpecs.xml',
         'gemsw/Geometry/data/GEMSpecsFilter.xml',
-        'gemsw/Geometry/data/QC8GE21/mf.xml',
         'gemsw/Geometry/data/QC8GE21/teststand.xml',
     ),
-    
     rootNodeName = cms.string('cms:OCMS')
-
 )
