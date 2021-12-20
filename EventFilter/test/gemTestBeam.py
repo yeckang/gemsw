@@ -106,9 +106,11 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         use1DSeeds = cms.bool(False), 
                                         excludingChambers = cms.vint32(options.excludeChambers),
                                         MuonSmootherParameters = cms.PSet(
-                                           PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
-                                           PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
-                                           RescalingFactor = cms.double(5.0)
+                                           #Propagator = cms.string('SteppingHelixPropagatorAny'),
+                                           Propagator = cms.string('StraightLinePropagator'),
+                                           ErrorRescalingFactor = cms.double(5.0),
+                                           MaxChi2 = cms.double(1000.0),
+                                           NumberOfSigma = cms.double(3),
                                         ),
                                         )
 process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
@@ -119,8 +121,8 @@ process.load("CommonTools.UtilAlgos.TFileService_cfi")
 process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
                                                process.MuonServiceProxy,
                                                gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                               tracks = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
-                                               seeds = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
+                                               tracks = cms.InputTag("GEMTrackFinder"),
+                                               trajs = cms.InputTag("GEMTrackFinder"),
                                                )
 process.TestBeamTrackAnalyzer.ServiceParameters.GEMLayers = cms.untracked.bool(True)
 process.TestBeamTrackAnalyzer.ServiceParameters.CSCLayers = cms.untracked.bool(False)

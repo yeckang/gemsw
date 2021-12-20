@@ -16,8 +16,8 @@
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
 
-#include <Geometry/Records/interface/MuonGeometryRecord.h>
-#include <Geometry/GEMGeometry/interface/GEMGeometry.h>
+#include "Geometry/Records/interface/MuonGeometryRecord.h"
+#include "Geometry/GEMGeometry/interface/GEMGeometry.h"
 #include "Geometry/CommonTopologies/interface/GEMStripTopology.h"
 
 #include "DataFormats/Common/interface/Handle.h"
@@ -31,10 +31,9 @@
 
 #include "RecoMuon/TransientTrackingRecHit/interface/MuonTransientTrackingRecHit.h"
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
-#include "gemsw/RecoMuon/interface/MuonSmoother.h"
 #include "RecoMuon/StandAloneTrackFinder/interface/StandAloneMuonSmoother.h"
-//#include "TrackingTools/PatternTools/interface/MuonSmoother.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
+#include "TrackingTools/KalmanUpdators/interface/Chi2MeasurementEstimator.h"
 #include "TrackingTools/KalmanUpdators/interface/KFUpdator.h"
 #include "RecoTracker/TrackProducer/src/TrajectoryToResiduals.h"
 
@@ -54,7 +53,7 @@ public:
 private:
   int iev; // events through
   edm::EDGetTokenT<GEMRecHitCollection> theGEMRecHitToken_;
-  MuonSmoother* theSmoother_;
+  StandAloneMuonSmoother* theSmoother_;
   MuonServiceProxy* theService_;
   KFUpdator* theUpdator_;
 
@@ -94,8 +93,8 @@ GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
   theService_ = new MuonServiceProxy(serviceParameters, consumesCollector(), MuonServiceProxy::UseEventSetupIn::RunAndEvent);
   edm::ParameterSet smootherPSet = ps.getParameter<edm::ParameterSet>("MuonSmootherParameters");
-  theSmoother_ = new MuonSmoother(smootherPSet,theService_);
   theUpdator_ = new KFUpdator();
+  theSmoother_ = new StandAloneMuonSmoother(smootherPSet, theService_);
   produces<reco::TrackCollection>();
   produces<TrackingRecHitCollection>();
   produces<reco::TrackExtraCollection>();
@@ -274,7 +273,8 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
                              bestSeed.direction(),
                              bestTrajectory.seedRef());
   //adding rec hits
-  Trajectory::RecHitContainer transHits = bestTrajectory.recHits();
+  //Trajectory::RecHitContainer transHits = bestTrajectory.recHits();
+  TrackingRecHit::ConstRecHitContainer transHits = findMissingHits(bestTrajectory);
   unsigned int nHitsAdded = 0;
   for (Trajectory::RecHitContainer::const_iterator recHit = transHits.begin(); recHit != transHits.end(); ++recHit)
   {
@@ -325,6 +325,7 @@ void GEMTrackFinder::findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer 
         LocalVector segDir = fronthit->det()->toLocal(segDirGV);
         LocalTrajectoryParameters param(segPos, segDir, charge);
         TrajectoryStateOnSurface tsos(param, error, fronthit->det()->surface(), &*theService_->magneticField());
+        //cout << tsos.globalMomentum().mag() << endl;
     
         //auto tsosBot = theService_->propagator("StraightLinePropagator")->propagate(tsos,rearhit->det()->surface());
         //cout << "GEMTrackFinder::tsos        " << tsos << endl;
@@ -351,6 +352,7 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
   DetId did(ptsd1.detId());
   const BoundPlane& bp = theService_->trackingGeometry()->idToDet(did)->surface();
   TrajectoryStateOnSurface tsos = trajectoryStateTransform::transientState(ptsd1,&bp,&*theService_->magneticField());
+  Trajectory traj = Trajectory(seed);
 
   TrackingRecHit::ConstRecHitContainer consRecHits;
   
@@ -367,8 +369,6 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     if (!tsos.isValid()){
       continue;
     }
-    //auto tsos_error = tsos.localError().positionError();
-    //cout << "tsos error " << tsos_error << endl;
     
     GlobalPoint tsosGP = tsos.globalPosition();
     //cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
@@ -398,6 +398,7 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       //const GEMStripTopology* top_(dynamic_cast<const GEMStripTopology*>(&(etaPart->topology())));
       //const float stripLength(top_->stripLength());
       //const float stripPitch(etaPart->pitch());
+      //if ( int(range.second - range.first) != 1 ) return Trajectory();
       for (GEMRecHitCollection::const_iterator rechit = range.first; rechit!=range.second; ++rechit){
  
         if (rechit->clusterSize() > maxClusterSize_ or rechit->clusterSize() < minClusterSize_) continue;
@@ -419,17 +420,21 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     
     if (tmpRecHit){      
       consRecHits.emplace_back(tmpRecHit);
+      traj.push(TrajectoryMeasurement(tsos, tmpRecHit), maxR);
     }
   }
   if (consRecHits.size() <3) return Trajectory();
 
-  auto firstHit = consRecHits.front();
-  tsos = theService_->propagator("StraightLinePropagator")->propagate(tsos,*(firstHit->surface()));
+  //auto firstHit = consRecHits.front();
+  //tsos = theService_->propagator("StraightLinePropagator")->propagate(tsos,*(firstHit->surface()));
 
-  vector<Trajectory> fitted = theSmoother_->trajectories(seed, consRecHits, tsos);
-  if(fitted.size() == 0) return Trajectory();
-  else if (fitted.front().chiSquared() < 0) return Trajectory();
-  else return fitted.front();
+  //cout << "HERE?" << endl;
+  auto result = theSmoother_->smooth(traj);
+  auto fitted = result.second;
+  //cout << "NO" << endl;
+  //return traj;
+  if (fitted.chiSquared() < 0) return Trajectory();
+  else return fitted;
 }
 
 TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory& track)

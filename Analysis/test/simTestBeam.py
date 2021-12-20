@@ -1,5 +1,15 @@
 import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
+
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing('analysis')
+options.register('excludeChambers',
+                 [],
+                 VarParsing.VarParsing.multiplicity.list,
+                 VarParsing.VarParsing.varType.int,
+                 "exclude the chamber from track reconstruction (0 to 3)")
+options.parseArguments()
+
 process = cms.Process('tb',eras.phase2_muon)
 
 # import of standard configurations
@@ -23,7 +33,7 @@ process.load('gemsw.Geometry.GeometryTestBeam_cff')
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100000),
+    input = cms.untracked.int32(options.maxEvents),
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
@@ -122,12 +132,14 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
-                                        excludingChambers = cms.vint32(1),
-                                        use1DSeeds = cms.bool(False),
+                                        use1DSeeds = cms.bool(False), 
+                                        excludingChambers = cms.vint32(options.excludeChambers),
                                         MuonSmootherParameters = cms.PSet(
-                                           PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
-                                           PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
-                                           RescalingFactor = cms.double(5.0)
+                                           #Propagator = cms.string('SteppingHelixPropagatorAny'),
+                                           Propagator = cms.string('StraightLinePropagator'),
+                                           ErrorRescalingFactor = cms.double(5.0),
+                                           MaxChi2 = cms.double(1000.0),
+                                           NumberOfSigma = cms.double(3),
                                         ),
                                         )
 process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
@@ -138,8 +150,11 @@ process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
                                                process.MuonServiceProxy,
                                                gemRecHitLabel = cms.InputTag("gemRecHits"),
                                                tracks = cms.InputTag("GEMTrackFinder"),
+                                               trajs = cms.InputTag("GEMTrackFinder"),
                                                )
-                                                  
+process.TestBeamTrackAnalyzer.ServiceParameters.GEMLayers = cms.untracked.bool(True)
+process.TestBeamTrackAnalyzer.ServiceParameters.CSCLayers = cms.untracked.bool(False)
+process.TestBeamTrackAnalyzer.ServiceParameters.RPCLayers = cms.bool(False)
 
 process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
