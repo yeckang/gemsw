@@ -20,9 +20,23 @@ git cms-merge-topic jshlee:mapping_update_v0.5 # Will be updated
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j 4
 cd gemsw/EventFilter/test
-cmsRun gemTestBeam.py inputFiles=file:/store/data/testbeam/run_20211103_0159-0-0.raw include20x10=<True or False>
+cmsRun gemTestBeam.py inputFiles=file:/store/data/testbeam/run_20211103_0159-0-0.raw include20x10=<True or False> maxEvents=<nEvents to analyse>
 ```
+
+# QC8 simulation
+instruction for siamultion of the GE21 QC8
+```bash
+cmsrel CMSSW12_2_0_pre1
+cd CMSSW12_2_0_pre1/src
+cmsenv
+git clone git@github.com:gem-sw/gemsw.git
+scram b -j 4
+cd gemsw/Analysis/test
+cmsRun simQC8GE21.py
+```
+
 # reading in dual raw files
+instruction for combining analysis for including ME0 data in testbeam setup
 ```bash
 cmsrel CMSSW_12_2_0_pre1
 cd CMSSW_12_2_0_pre1/src
