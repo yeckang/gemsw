@@ -96,19 +96,24 @@ process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropa
 process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
 process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
 
-process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
+process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderTB",
                                         process.MuonServiceProxy,
                                         gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                        maxClusterSize = cms.int32(10),
+                                        maxClusterSize = cms.int32(6),
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
                                         use1DSeeds = cms.bool(False), 
-                                        excludingChambers = cms.vint32(options.excludeChambers),
+                                        requireUniqueHit = cms.bool(True),
+                                        excludingTrackers = cms.vint32(options.excludeTrackers),
+                                        doFit = cms.bool(True),
+                                        direction = cms.vdouble(0,1,0),
                                         MuonSmootherParameters = cms.PSet(
-                                           PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
-                                           PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
-                                           RescalingFactor = cms.double(5.0)
+                                           #Propagator = cms.string('SteppingHelixPropagatorAny'),
+                                           Propagator = cms.string('StraightLinePropagator'),
+                                           ErrorRescalingFactor = cms.double(5.0),
+                                           MaxChi2 = cms.double(1000.0),
+                                           NumberOfSigma = cms.double(3),
                                         ),
                                         )
 process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
@@ -135,18 +140,7 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       'output_edm.root'),
 )
 
-process.load("DQM.Integration.config.environment_cfi")
-process.load('DQM.GEM.GEMDQM_cff')
-
-process.dqmEnv.subSystemFolder = "GEM"
-process.dqmEnv.eventInfoFolder = "EventInfo"
-process.dqmSaver.path = ""
-process.dqmSaver.tag = "GEM"
-
 process.unpack = cms.Path(process.muonGEMDigis)
 process.reco = cms.Path(process.gemRecHits * process.GEMTrackFinder)
 process.track_ana = cms.Path(process.TestBeamTrackAnalyzer)
-process.dqm = cms.Path(process.GEMDQM)
-process.dqm.remove(process.GEMDAQStatusSource)
-process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 process.outpath = cms.EndPath(process.output)
