@@ -48,7 +48,6 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1477)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(True)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -60,29 +59,11 @@ if options.include20x10 :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                                  tag=cms.string("GEMeMapTestBeam"),
                                                  connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")),
-                                        cms.PSet(
-                                            record = cms.string('GEMAlignmentRcd'),
-                                            tag = cms.string("TBGEMAlignment_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
-                                        cms.PSet(
-                                            record = cms.string('GEMAlignmentErrorExtendedRcd'),
-                                            tag = cms.string("TBGEMAlignmentErrorExtended_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
-                                        cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
    )
 else :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                                  tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")),
-                                        cms.PSet(
-                                            record = cms.string('GEMAlignmentRcd'),
-                                            tag = cms.string("TBGEMAlignment_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
-                                        cms.PSet(
-                                            record = cms.string('GEMAlignmentErrorExtendedRcd'),
-                                            tag = cms.string("TBGEMAlignmentErrorExtended_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
-                                        cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_test.db")),
     )
 
 process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -101,5 +82,5 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 
 process.unpack = cms.Path(process.muonGEMDigis)
-process.reco = cms.Path(process.gemRecHits)
+#process.reco = cms.Path(process.gemRecHits)
 process.outpath = cms.EndPath(process.output)

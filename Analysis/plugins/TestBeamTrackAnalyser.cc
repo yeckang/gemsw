@@ -79,6 +79,7 @@ private:
   std::map<int, TH2D*> track_occ_;
   std::map<int, TH2D*> rechit_occ_;
   std::map<int, TH2D*> rechit_pos_;
+  std::map<int, TH2D*> rechit_strip_;
   std::map<int, TH1D*> residual_x_;
   std::map<int, TH1D*> residual_strip_;
   std::map<int, TH1D*> residual_eta_;
@@ -89,6 +90,7 @@ private:
   std::map<int, TH1D*> trackingError_y_;
   std::map<int, TH2D*> track_rechit_x_;
   std::map<int, TH2D*> track_rechit_y_;
+  std::map<int, TH2D*> track_rechit_strip_;
 
   std::map<Key3, TH2D*> track_occ_detail_;
   std::map<Key3, TH2D*> rechit_occ_detail_;
@@ -216,11 +218,13 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
         rechit_occ_[station]->Fill(gp_track.x(), gp_track.z());
         rechit_pos_[station]->Fill(gp_rechit.x(), gp_rechit.z());
+        rechit_strip_[station]->Fill(gp_rechit.x(), strip_rechit);
 
         if (station != 0) track_rechit_x_[station]->Fill(gp_track.x(), gp_rechit.x());
         else track_rechit_x_[station]->Fill(gp_track.z(), gp_rechit.z());
         if (station != 0) track_rechit_y_[station]->Fill(gp_track.z(), gp_rechit.z());
         else track_rechit_x_[station]->Fill(gp_track.x(), gp_rechit.x());
+        track_rechit_strip_[station]->Fill(strip, strip_rechit);
 
         residual_x_[station]->Fill(residualX);
         residual_y_[station]->Fill(residualY);
@@ -266,6 +270,10 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
                                      Form("Position from Matched RecHit : GE%d", st),
                                      800, -10, 10,
                                      800, -10, 10);
+    rechit_strip_[st] = fs->make<TH2D>(Form("rechit_strip_GE%d", st),
+                                       Form("Position from Matched RecHit vs Strip : GE%d; x [cm]; strip", st),
+                                       800, -10, 10,
+                                       384, 0, 384);
     track_rechit_x_[st] = fs->make<TH2D>(Form("track_rechit_occ_x_GE%d", st),
                                          Form("Occpancy from Track vs RecHit : GE%d", st),
                                          200, -10, 10,
@@ -274,6 +282,10 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
                                          Form("Occpancy from Track vs RecHit : GE%d", st),
                                          200, -10, 10,
                                          200, -10, 10);
+    track_rechit_strip_[st] = fs->make<TH2D>(Form("track_rechit_occ_strip_GE%d", st),
+                                             Form("Occpancy from Track vs RecHit (strip) : GE%d", st),
+                                             384, 0, 384,
+                                             384, 0, 384);
     residual_x_[st] = fs->make<TH1D>(Form("residual_x_GE%d", st),
                                      Form("residual X : GE%d", st),
                                      400, -20, 20);

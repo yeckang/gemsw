@@ -149,16 +149,16 @@ process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
 process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
-process.reconstruction_step = cms.Path(process.gemRecHits * process.GEMTrackFinder)
+process.reconstruction_step = cms.Path(process.gemRecHits)# * process.GEMTrackFinder)
 process.analyser_step = cms.Path(process.TestBeamTrackAnalyzer)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
 process.schedule = cms.Schedule(process.generation_step,process.simulation_step,
 process.digitisation_step,
-#process.digi2raw_step,
+process.digi2raw_step,
 process.reconstruction_step,
-process.analyser_step,
+#process.analyser_step,
 process.endjob_step,process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
